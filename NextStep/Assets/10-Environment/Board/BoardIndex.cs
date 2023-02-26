@@ -13,6 +13,12 @@ public class BoardIndex
         this.Row = row;
     }
 
+    public BoardIndex(MoveStep step)
+    {
+        this.Col = step.Col;
+        this.Row = step.Row;
+    }
+
     public override bool Equals(object obj)
     {
         return obj is BoardIndex index &&

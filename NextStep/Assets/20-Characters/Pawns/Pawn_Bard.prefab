@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6006685779190704365}
   - component: {fileID: 8407149122864411906}
+  - component: {fileID: 5968830241718853809}
+  - component: {fileID: 8087009675192182969}
   m_Layer: 0
   m_Name: Pawn_Bard
   m_TagString: Untagged
@@ -44,6 +46,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c697aa7388b8768458c040c09c18fc26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameData: {fileID: 11400000, guid: a505bd47d0231694da85abe36bfc1bb0, type: 2}
+  rotationSpeed: 150
+  moveSpeed: 5
+--- !u!143 &5968830241718853809
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418737722134730906}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.001
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1.04, z: 0}
+--- !u!95 &8087009675192182969
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418737722134730906}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: e6f8c6b4cd0c5d24fbefebd224edfdb5, type: 3}
+  m_Controller: {fileID: 9100000, guid: d1fef635ef6f606498b0c1d6df5542f2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &8457623135539302847
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -99,7 +141,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 95035489531880058, guid: 6608668b412177c409f004f80dac2b01, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 95035489531880058, guid: 6608668b412177c409f004f80dac2b01, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6608668b412177c409f004f80dac2b01, type: 3}
 --- !u!4 &8453751107904655681 stripped
 Transform:
