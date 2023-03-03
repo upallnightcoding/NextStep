@@ -7,99 +7,109 @@ public class BoardCntrl : MonoBehaviour
     [SerializeField] private GameData gameData;
     [SerializeField] private GameObject tileRight;
     [SerializeField] private GameObject tileLeft;
+    [SerializeField] private UICntrl uiCntrl;
 
-    private Dictionary<BoardIndex, BoardTile> board;
-    private BoardTile current = null;
+    //private Dictionary<BoardIndex, BoardTile> board;
+    //private BoardTile current = null;
+
+    BoardModel boardModel = null;
+    
+    private string PickAMove() => (GetRandomMove()); 
 
     // Start is called before the first frame update
     void Start()
     {
-        CreateBoard();
-        CreatePath();
+        boardModel = new BoardModel();
+
+        InitializeBoard();
+        //CreatePath();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void InitializeBoard() 
     {
-        
-    }
+        GameObject boardParent = new GameObject("Board");
 
-    private void CreatePath() 
-    {
-        bool validPath = false;
-        int attempts = 0;
-
-        while (!validPath && (attempts++ < gameData.numberPathAttempts)) 
+        for (int col = 0; col < gameData.numberTiles; col++) 
         {
-            Stack<BoardTile> stack = new Stack<BoardTile>();
-            int count = 1;
-            int turn = 0;
-            bool validMove = true;
-
-            current = CreateStartingPoint();
-            stack.Push(current);
-
-            while((count <= gameData.numberOfMoves) && validMove && (attempts++ < gameData.numberPathAttempts))
+            for (int row = 0; row < gameData.numberTiles; row++)
             {
-                validMove = MakeMove(turn++, PickAMove(), stack);
-                count++;
-            }
+                GameObject square = gameData.GetCheckeredTile(col, row);
+                Vector3 position = gameData.TilePosition(col, row);
 
-            if (validMove) {
-                validPath = true;
-                current.SetColor(Color.red);
-            } else {
-                while(stack.Count > 0) 
-                {
-                    Debug.Log("Pop: " + stack.Peek().ToString());
-                    BoardTile tile = stack.Pop();
-                    tile.RevertColor();
-                    tile.MarkAsUnVisited();
-                }
+                GameObject tile = Instantiate(square, position, Quaternion.identity);
+                tile.transform.parent = boardParent.transform;
+
+                boardModel.Add(col, row, tile);
             }
         }
-
-        Debug.Log($"Attempts: {attempts}");
     }
 
-    private bool MakeMove(int turn, string move, Stack<BoardTile> stack)
-    {
-        BoardTile startingTile = current;
-        int movechar = 0;
-        bool valid = true;
+    // private void CreatePath() 
+    // {
+    //     bool validPath = false;
+    //     int attempts = 0;
 
-        Debug.Log($"Move: {move}/{startingTile.ToString()}");
+    //     while (!validPath && (attempts++ < gameData.numberPathAttempts)) 
+    //     {
+    //         Stack<BoardTile> stack = new Stack<BoardTile>();
+    //         int count = 1;
+    //         bool validMove = true;
 
-        Color turnColor = (turn % 2) == 0 ? Color.cyan : Color.yellow;
+    //         current = CreateStartingPoint();
+    //         stack.Push(current);
 
-        while ((movechar < move.Length) && valid)
-        {
-            MoveStep step = GetStep(move.Substring(movechar, 1));
-            BoardIndex nextStep = current.NextStep(step);
-            current = GetBoardTile(nextStep);
+    //         while((count <= gameData.numberOfMoves) && validMove && (attempts++ < gameData.numberPathAttempts))
+    //         {
+    //             string move = PickAMove();
+    //             validMove = MakeMove(move, stack);
+    //             uiCntrl.SetBtn(count - 1, move);
+    //             count++;
+    //         }
 
-            if ((current != null) && (current.IsMarkAsUnVisited()))
-            {
-                current.SetColor(turnColor);
-                current.MarkAsVisited();
-                stack.Push(current);
-            } else {
-                valid = false;
-                Debug.Log("Failed ..." + current + "/" + current?.IsMarkAsUnVisited());
-            }
+    //         if (validMove) {
+    //             validPath = true;
+    //             stack.Peek().SetColor(Color.red);
+    //         } else {
+    //             while(stack.Count > 0) 
+    //             {
+    //                 BoardTile tile = stack.Pop();
+    //                 tile.RevertColor();
+    //                 tile.MarkAsUnVisited();
+    //             }
+    //         }
+    //     }
 
-            movechar++;
-        }
+    //     Debug.Log($"Attempts: {attempts}");
+    // }
 
-        return(valid);
-    }
+    // private bool MakeMove(string move, Stack<BoardTile> stack)
+    // {
+    //     BoardTile startingTile = current;
+    //     int movechar = 0;
+    //     bool valid = true;
 
-    private string PickAMove()
-    {
-        string move = GetRandomMove();
+    //     while ((movechar < move.Length) && valid)
+    //     {
+    //         MoveStep step = GetStep(move.Substring(movechar, 1));
+    //         BoardIndex nextStep = current.NextStep(step);
+    //         current = GetBoardTile(nextStep);
 
-        return(move);
-    }
+    //         if ((current != null) && (current.IsMarkAsUnVisited()))
+    //         {
+    //             current.SetColor(Color.cyan);
+    //             current.MarkAsVisited();
+    //             stack.Push(current);
+    //         } else {
+    //             valid = false;
+    //             Debug.Log("Failed ..." + current + "/" + current?.IsMarkAsUnVisited());
+    //         }
+
+    //         movechar++;
+    //     }
+
+    //     return(valid);
+    // }
+
 
     private BoardTile CreateStartingPoint()
     {
@@ -110,26 +120,26 @@ public class BoardCntrl : MonoBehaviour
         return(startPoint);
     }
 
-    private void CreateBoard() 
-    {
-        GameObject boardParent = new GameObject("Board");
+    // private void CreateBoard() 
+    // {
+    //     GameObject boardParent = new GameObject("Board");
 
-        board = new Dictionary<BoardIndex, BoardTile>();
+    //     board = new Dictionary<BoardIndex, BoardTile>();
 
-        for (int col = 0; col < gameData.numberTiles; col++) 
-        {
-            for (int row = 0; row < gameData.numberTiles; row++)
-            {
-                GameObject square = (((row + col) % 2) == 0) ? tileLeft : tileRight;
-                Vector3 position = new Vector3(col*gameData.tileSize, 0.0f, row*gameData.tileSize);
+    //     for (int col = 0; col < gameData.numberTiles; col++) 
+    //     {
+    //         for (int row = 0; row < gameData.numberTiles; row++)
+    //         {
+    //             GameObject square = (((row + col) % 2) == 0) ? tileLeft : tileRight;
+    //             Vector3 position = new Vector3(col*gameData.tileSize, 0.0f, row*gameData.tileSize);
 
-                GameObject tile = Instantiate(square, position, Quaternion.identity);
-                tile.transform.parent = boardParent.transform;
+    //             GameObject tile = Instantiate(square, position, Quaternion.identity);
+    //             tile.transform.parent = boardParent.transform;
 
-                board.Add(new BoardIndex(col, row), new BoardTile(col, row, tile));
-            }
-        }
-    }
+    //             board.Add(new BoardIndex(col, row), new BoardTile(col, row, tile));
+    //         }
+    //     }
+    // }
 
     private string GetRandomMove()
     {
@@ -140,9 +150,9 @@ public class BoardCntrl : MonoBehaviour
     {
         BoardTile tile = null;
 
-        if (!board.TryGetValue(step, out tile)) {
-            tile = null;
-        }
+        // if (!board.TryGetValue(step, out tile)) {
+        //     tile = null;
+        // }
 
         return(tile);
     }
@@ -153,9 +163,9 @@ public class BoardCntrl : MonoBehaviour
         int col = Random.Range(0, gameData.numberTiles);
         int row = Random.Range(0, gameData.numberTiles);
 
-        if (!board.TryGetValue(new BoardIndex(col, row), out tile)) {
-            tile = null;
-        }
+        // if (!board.TryGetValue(new BoardIndex(col, row), out tile)) {
+        //     tile = null;
+        // }
 
         return(tile);
     }
@@ -180,6 +190,21 @@ public class BoardCntrl : MonoBehaviour
         }
 
         return(step);
+    }
+}
+
+public class BoardModel 
+{
+    private Dictionary<BoardIndex, BoardTile> board = null;
+
+    public BoardModel() 
+    {
+        board = new Dictionary<BoardIndex, BoardTile>();
+    }
+
+    public void Add(int col, int row, GameObject tile) 
+    {
+        board.Add(new BoardIndex(col, row), new BoardTile(col, row, tile));    
     }
 }
 

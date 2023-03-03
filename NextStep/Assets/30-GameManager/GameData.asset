@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameData
   m_EditorClassIdentifier: 
   targetDistance: 2.5
-  numberTiles: 9
+  numberTiles: 10
   tileSize: 5
   moveList:
   - N
@@ -32,5 +32,16 @@ MonoBehaviour:
   - SS
   - EE
   - WW
-  numberOfMoves: 5
-  numberPathAttempts: 50
+  numberOfMoves: 4
+  numberPathAttempts: 100
+  tileColors:
+  - {fileID: 2100000, guid: 03c2a3c79e914734d9d41f99db652e5e, type: 2}
+  - {fileID: 2100000, guid: 183daf63c6179a14fbc58204ed83129b, type: 2}
+  - {fileID: 2100000, guid: 48d7f03d2cddf3842af70d03f04cab9e, type: 2}
+  - {fileID: 2100000, guid: 10263ce8b354ebd4b92be599a9b71a4a, type: 2}
+  - {fileID: 2100000, guid: f02d76214791c4243b2a09d7a541f589, type: 2}
+  - {fileID: 2100000, guid: 96043fb18b3329b449a5e377202ec42d, type: 2}
+  - {fileID: 2100000, guid: 1df5e876966a178419c51c1ab1641494, type: 2}
+  - {fileID: 2100000, guid: 7a67a36bb4313da40b1b89c22489552d, type: 2}
+  startTileColor: {fileID: 2100000, guid: 9593a9825e9743e40b6aadea867faf72, type: 2}
+  endTileColor: {fileID: 2100000, guid: c13c0d1c2dfe78c4e9c3a32aa95f7eee, type: 2}
