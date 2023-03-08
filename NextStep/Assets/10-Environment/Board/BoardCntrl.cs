@@ -9,20 +9,22 @@ public class BoardCntrl : MonoBehaviour
     [SerializeField] private GameObject tileLeft;
     [SerializeField] private UICntrl uiCntrl;
 
-    //private Dictionary<BoardIndex, BoardTile> board;
-    //private BoardTile current = null;
+    private BoardModel boardModel = null;
 
-    BoardModel boardModel = null;
+    private GamePath gamePath;
     
-    private string PickAMove() => (GetRandomMove()); 
-
     // Start is called before the first frame update
     void Start()
     {
         boardModel = new BoardModel();
 
         InitializeBoard();
-        //CreatePath();
+        gamePath = CreateGamePath();
+    }
+
+    public void ShowMove(string move, Material color) 
+    {
+        gamePath.ShowMove(move, color);
     }
 
     private void InitializeBoard() 
@@ -43,6 +45,61 @@ public class BoardCntrl : MonoBehaviour
             }
         }
     }
+
+    private GamePath CreateGamePath()
+    {
+        bool pathComplete = false;
+        int attempts = 0;
+        GamePath gamePath = null;
+
+        while (!pathComplete && (attempts++ < gameData.numberPathAttempts))
+        {
+            int numberOfMoves = 1;
+            bool validMove = true;
+            
+            gamePath = new GamePath(gameData, boardModel);
+
+            while(validMove && (numberOfMoves <= gameData.numberOfMoves))
+            {
+                string move = GetRandomMove();
+                validMove = gamePath.append(move);
+                uiCntrl.SetBtn(numberOfMoves - 1, move);
+                numberOfMoves++;
+            }
+
+            if (validMove) {
+                gamePath.Complete();
+                pathComplete = true;
+            } else {
+                gamePath.BackTrack();
+            }
+        }
+
+        if (!pathComplete) {
+            gamePath = null;
+        }
+
+        return(gamePath);
+    }
+
+    private string GetRandomMove()
+    {
+        return(gameData.moveList[Random.Range(0, gameData.moveList.Count)]);
+    }
+
+    // private bool MakeMove(string move, Stack<BoardTile> stack) 
+    // {
+    //     bool valid = true;
+    //     int moveChar = 0;
+
+    //     while (valid && (moveChar < move.Length))
+    //     {
+    //         //MoveStep step = GetStep(move.Substring(moveChar, 1));
+    //         //BoardIndex nextStep = current.NextStep(step);
+    //     }
+
+    //     return(valid);
+    // }
 
     // private void CreatePath() 
     // {
@@ -111,14 +168,7 @@ public class BoardCntrl : MonoBehaviour
     // }
 
 
-    private BoardTile CreateStartingPoint()
-    {
-        BoardTile startPoint = GetRandomTile();
-        startPoint.SetColor(Color.green);
-        startPoint.MarkAsVisited();
-
-        return(startPoint);
-    }
+    
 
     // private void CreateBoard() 
     // {
@@ -141,40 +191,142 @@ public class BoardCntrl : MonoBehaviour
     //     }
     // }
 
-    private string GetRandomMove()
-    {
-        return(gameData.moveList[Random.Range(0, gameData.moveList.Count)]);
-    }
+    // private BoardTile GetBoardTile(BoardIndex step)
+    // {
+    //     BoardTile tile = null;
 
-    private BoardTile GetBoardTile(BoardIndex step)
+    //     // if (!board.TryGetValue(step, out tile)) {
+    //     //     tile = null;
+    //     // }
+
+    //     return(tile);
+    // }
+
+    
+}
+
+public class BoardModel 
+{
+    private Dictionary<BoardIndex, BoardTile> board = null;
+
+    public BoardModel() 
+    {
+        board = new Dictionary<BoardIndex, BoardTile>();
+    } 
+
+    public BoardTile GetTile(int col, int row) 
     {
         BoardTile tile = null;
 
-        // if (!board.TryGetValue(step, out tile)) {
-        //     tile = null;
-        // }
+        if (!board.TryGetValue(new BoardIndex(col, row), out tile)) {
+            tile = null;
+        }
 
         return(tile);
     }
 
-    private BoardTile GetRandomTile()
+    public BoardTile GetTile(BoardIndex boardIndex) 
     {
         BoardTile tile = null;
+
+        if (!board.TryGetValue(boardIndex, out tile)) {
+            tile = null;
+        }
+
+        return(tile);
+    }
+
+    public void Add(int col, int row, GameObject tile) 
+    {
+        board.Add(new BoardIndex(col, row), new BoardTile(col, row, tile));    
+    }
+
+    public BoardTile GetRandomTile(GameData gameData)
+    {
         int col = Random.Range(0, gameData.numberTiles);
         int row = Random.Range(0, gameData.numberTiles);
 
-        // if (!board.TryGetValue(new BoardIndex(col, row), out tile)) {
-        //     tile = null;
-        // }
+        return(GetTile(col, row));
+    }
+}
 
-        return(tile);
+public class GamePath
+{
+    private Stack<BoardTile> backTrack = new Stack<BoardTile>();
+    private BoardTile pathStartPoint;
+    private BoardTile drawPoint;
+    private GameData gameData;
+    private BoardModel boardModel;
+    private BoardTile currentTile;
+
+    public GamePath(GameData gameData, BoardModel boardModel)
+    {
+        this.gameData = gameData;
+        this.boardModel = boardModel;
+
+        CreateStartingPoint();
     }
 
-    private MoveStep GetStep(string moveChar)
+    public void ShowMove(string move, Material material)  
+    {
+        for (int moveChar = 0; moveChar < move.Length; moveChar++)
+        {
+            MoveStep step = GetStep(move, moveChar);
+            BoardIndex nextStep = drawPoint.Next(step);
+            drawPoint = boardModel.GetTile(nextStep);
+            drawPoint.Set(material.color);
+        }
+    }
+
+    public bool append(string move) 
+    {
+        int movePos = 0;
+        bool valid = true;
+
+        Debug.Log($"Move: {move}");
+
+        while (valid && (movePos < move.Length))
+        {
+            MoveStep step = GetStep(move, movePos);
+            BoardIndex nextStep = currentTile.Next(step);
+            currentTile = boardModel.GetTile(nextStep);
+
+            if ((currentTile != null) && (currentTile.IsMarkAsUnVisited()))
+            {
+                //currentTile.MarkAsVisited(Color.cyan);
+                currentTile.MarkAsVisited();
+                backTrack.Push(currentTile);
+                movePos++;
+            } else {
+                valid = false;
+                Debug.Log($"Path Failed - Current Tile: {currentTile} {currentTile?.IsMarkAsUnVisited()}");
+            }
+        }
+
+        return(valid);
+    }
+
+    public void Complete()
+    {
+        currentTile.MarkAsVisited(Color.red);
+    }
+
+    public void BackTrack()
+    {
+        while(backTrack.Count > 0) 
+        {
+            BoardTile tile = backTrack.Pop();
+            Debug.Log($"Back Track: {tile}");
+            tile.RevertColor();
+            tile.MarkAsUnVisited();
+        }
+    }
+
+    private MoveStep GetStep(string move, int movePos)
     {
         MoveStep step = null;
 
-        switch(moveChar) {
+        switch(move.Substring(movePos, 1)) {
             case "E": 
                 step = new MoveStep(1, 0);
                 break;
@@ -191,20 +343,18 @@ public class BoardCntrl : MonoBehaviour
 
         return(step);
     }
-}
 
-public class BoardModel 
-{
-    private Dictionary<BoardIndex, BoardTile> board = null;
-
-    public BoardModel() 
+    private void CreateStartingPoint()
     {
-        board = new Dictionary<BoardIndex, BoardTile>();
-    }
+        pathStartPoint = boardModel.GetRandomTile(gameData);
+        pathStartPoint.MarkAsVisited(Color.green);
 
-    public void Add(int col, int row, GameObject tile) 
-    {
-        board.Add(new BoardIndex(col, row), new BoardTile(col, row, tile));    
+        currentTile = pathStartPoint;
+        drawPoint = pathStartPoint;
+
+        backTrack.Push(pathStartPoint);
+
+        Debug.Log($"Start Position - Current Tile: {pathStartPoint}");
     }
 }
 

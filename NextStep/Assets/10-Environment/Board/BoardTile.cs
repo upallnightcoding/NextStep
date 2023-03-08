@@ -10,7 +10,6 @@ public class BoardTile
 
     public Vector3 Position() => Tile.transform.position;
 
-    public void MarkAsVisited() => state = BoardTileState.VISITED;
     public void MarkAsUnVisited() => state = BoardTileState.UNVISTIED;
 
     public bool IsMarkAsUnVisited() => (state == BoardTileState.UNVISTIED);
@@ -26,12 +25,23 @@ public class BoardTile
         this.Tile = tile;
     }
 
-    public BoardIndex NextStep(MoveStep step)
+    public BoardIndex Next(MoveStep step)
     {
         return(new BoardIndex(Col + step.Col, Row + step.Row));
     }
 
-    public void SetColor(Color color)
+    public void MarkAsVisited(Color color) 
+    {
+        state = BoardTileState.VISITED;
+        Set(color);
+    }
+
+    public void MarkAsVisited() 
+    {
+        state = BoardTileState.VISITED;
+    }
+
+    public void Set(Color color)
     {
         Material material = Tile
             .transform

@@ -7,15 +7,13 @@ using TMPro;
 public class UICntrl : MonoBehaviour
 {
     [SerializeField] private Button[] pathButtons;
+    [SerializeField] private Material[] colors;
     [SerializeField] private GameData gameData;
+    [SerializeField] private BoardCntrl boardCntrl;
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach (Button button in pathButtons) {
-            button.gameObject.SetActive(false);
-        }
-
         for (int i = 0; i < gameData.numberOfMoves; i++) {
             pathButtons[i].gameObject.SetActive(true);
         }
@@ -27,48 +25,53 @@ public class UICntrl : MonoBehaviour
         
     }
 
+    private string GetMove(int btnIndex)
+    {
+        return(pathButtons[btnIndex].transform.Find("Movement").GetComponent<TMP_Text>().text);
+    }
+
     public void SetBtn(int btnIndex, string text) 
     {
-        pathButtons[btnIndex].GetComponentInChildren<TMP_Text>().SetText(text);
+        pathButtons[btnIndex].transform.Find("Movement").GetComponent<TMP_Text>().SetText(text);
     }
 
     public void OnClickGreenBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(0), colors[0]);
     }
 
     public void OnClickBlueBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(1), colors[1]);
     }
 
     public void OnClickOrangeBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(2), colors[2]);
     }
 
     public void OnClickPurpleBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(3), colors[3]);
     }
 
     public void OnClickRedBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(4), colors[4]);
     }
 
     public void OnClickSkyBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(5), colors[5]);
     }
 
-    public void OnClickBGBtn() 
+    public void OnClickBlueGrayGBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(6), colors[6]);
     }
 
     public void OnClickGrayBtn() 
     {
-        Debug.Log("OnClickGreenBtn");
+        boardCntrl.ShowMove(GetMove(7), colors[7]);
     }
 }

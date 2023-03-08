@@ -15,6 +15,8 @@ MonoBehaviour:
   targetDistance: 2.5
   numberTiles: 10
   tileSize: 5
+  tileLeft: {fileID: 574384748215413719, guid: af463c69a2604894d801b09d51e9cd6d, type: 3}
+  tileRight: {fileID: 8489362577233962636, guid: d118a9515933ffb41aecb9d243f77be7, type: 3}
   moveList:
   - N
   - S
@@ -32,7 +34,7 @@ MonoBehaviour:
   - SS
   - EE
   - WW
-  numberOfMoves: 4
+  numberOfMoves: 5
   numberPathAttempts: 100
   tileColors:
   - {fileID: 2100000, guid: 03c2a3c79e914734d9d41f99db652e5e, type: 2}
